@@ -121,13 +121,29 @@
 <body>
   <div class="container">
     <button class="credits-button" onclick="viewCredits()">Credits</button>
-    <div class="menu">
+    <div  id="mainMenu" class="menu">
       <h1>Maze Muncher</h1>
       <button onclick="startGame()">Start Game</button>
       <button onclick="showSettings()">Settings</button>
       <button onclick="viewLeaderboard()">Leaderboard</button>
       <button onclick="exitGame()">Exit Game</button>
     </div>
+
+    <div id="settingsScreen" class="menu" style="display: none;">
+      <h1>Settings</h1>
+      <button class="volumeScreen" onclick="volumeScreen()">Volume</button>
+      <button onclick="accessibilityMenu()">Accessibility Options</button>
+      <button onclick="goBack()">Back</button>
+    </div>
+
+    <div id="volumeScreen" class="menu" style="display: none;">
+      <h1>Volume</h1>
+      <label for="volume">Volume:</label>
+      <input type="range" id="volume" min="0" max="100">
+      <button onclick="goBack()">Back</button>
+    </div>
+
+  </div>
   	<div class="fence"></div> </div>
 
   <script>
@@ -138,11 +154,35 @@
       alert('Starting the game...');
     }
 
-    /**
-     * Displays the settings menu. Currently displays an alert.
-     */
+    let previousScreen = "mainMenu";
+
+    // Displays the settings screen - more settings can be added as deemed appropriate //
     function showSettings() {
-      alert('Settings menu will be displayed here.');
+      document.getElementById("mainMenu").style.display="none";
+      document.getElementById("settingsScreen").style.display="block";
+      previousScreen = "mainMenu"; // We came from the main menu //
+    }
+    // Displays the volume settings screen. Can add more volume settings later (background noise, voices, etc.) //
+    function volumeScreen() {
+      document.getElementById("settingsScreen").style.display="none";
+      document.getElementById("volumeScreen").style.display="block";
+      previousScreen = "settingsScreen"; // Came from the settings menu //
+    }
+    
+    // Takes us back to previous screen //
+    function goBack() {
+      if(previousScreen === "mainMenu") {
+        // If we came from the main menu, go back to main menu
+        document.getElementById("mainMenu").style.display = "block";
+        document.getElementById("settingsScreen").style.display = "none";
+        document.getElementById("volumeScreen").style.display = "none";
+      } else {
+        // If we came from settings, go back to settings //
+        document.getElementById("settingsScreen").style.display = "block";
+        document.getElementById("volumeScreen").style.display = "none";
+        previousScreen = "mainMenu"; // Update previous screen in case of another back press //
+      }
+
     }
 
     /**
