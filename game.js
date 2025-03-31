@@ -26,7 +26,7 @@ class Pacman extends Phaser.Scene {
     this.respawnDelay = 5000;
     this.modeTimer = null;
     this.currentMode = "scatter";
-    this.initModeTimers();
+    
 
     this.lives = 3;
     this.isPacmanAlive = true;
@@ -47,7 +47,7 @@ class Pacman extends Phaser.Scene {
     },duration);
   }
 
-/*   switchMode() {
+switchMode() {
    if(this.currentMode === "scared") {
     this.currentMode = this.previouseMode || "scatter";
     this.setModeTimer(this[this.currentMode+"ModeDuration"]);
@@ -73,7 +73,7 @@ class Pacman extends Phaser.Scene {
       });
       this.previouseMode = this.currentMode;
    }
-} */
+}
   
   getChaseTarget(ghost) {
     //let chaseTarget = null;
@@ -231,6 +231,12 @@ class Pacman extends Phaser.Scene {
     this.load.image("endGameImage","assets/pac man text/spr_message_2.png");
   }
   create() {
+
+    this.isStarting = true; // Prevent gameplay until countdown ends
+
+    // Begin Screen Countdown
+    this.createStartCountdown();
+
     this.map = this.make.tilemap({key:"map"});
     const tileset = this.map.addTilesetImage("pacman tileset");
     const layer = this.map.createLayer("Tile Layer 1",[tileset]);
@@ -321,7 +327,7 @@ class Pacman extends Phaser.Scene {
     this.redGhost.nextIntersection = this.redGhost.path.shift();
 
     this.ghosts = [this.pinkGhost,this.redGhost,this.orangeGhost,this.blueGhost];
-
+    this.initModeTimers();
     this.ghosts.forEach(ghost => {
       this.physics.add.overlap(this.pacman,ghost,this.handlePacmanGhostCollision,null,this);
     });
@@ -503,7 +509,13 @@ class Pacman extends Phaser.Scene {
     this.powerPills.create(432,480,"powerPill");
   }
   eatDot(pacman,dot) {
-    dot.disableBody(true,true);
+    dot.disableBody(true, true);
+
+  // Check win condition
+  if (this.dots.countActive(true) === 0) {
+    this.endGame("win");
+    this.physics.pause();
+  }
   }
 
   eatPowerPill(pacman,powerPill) {
@@ -631,63 +643,57 @@ class Pacman extends Phaser.Scene {
    });
  }
  resetAfterDeath() {
-  this.lives -=1;
-  if(this.lives ===1)
-    this.lifeCounter1.destroy();
-  if(this.lives ===2)
-    this.lifeCounter2.destroy();
-  if(this.lives>0) {
-    this.pacman.setPosition(230,432);
-    this.resetGhosts();
-    this.anims.create({
-      key:"pacmanAnim",
-      frames: [
-        {key:"pacman"},
-        {key:"pacman1"},
-        {key:"pacman2"},
-        {key:"pacman3"},
-        {key:"pacman4"},
-      ],
-      frameRate:10,
-      repeat:-1,
-    });
-    this.pacman.play("pacmanAnim");
-    this.currentMode = "scatter";
-  } else {
-    this.pacman.destroy();
-    this.redGhost.destroy();
-    this.pinkGhost.destroy();
-    this.blueGhost.destroy();
-    this.orangeGhost.destroy();
-    this.physics.pause();
-    this.add.image(this.cameras.main.centerX,this.cameras.main.centerY+56,"endGameImage").setOrigin(0.5);
-  }
-  this.isPacmanAlive = true;
-  this.hasRespawned = true;
- }
+  this.lives -= 1;
 
- resetGhosts() {
-  this.redGhost.setPosition(232,290);
-  this.pinkGhost.setPosition(220,290);
-  this.blueGhost.setPosition(255,290);
-  this.orangeGhost.setPosition(210,290);
-  
-  this.ghosts = [this.pinkGhost,this.redGhost,this.orangeGhost,this.blueGhost];
-  
-  this.ghosts.forEach(ghost => {
+  if (this.lives === 2) this.lifeCounter2.destroy();
+  if (this.lives === 1) this.lifeCounter1.destroy();
+
+  if (this.lives > 0) {
+    this.pacman.setPosition(230, 432);
+    this.pacman.setTexture("Farm boy0");
+    this.pacman.setVisible(true);
+    this.pacman.setActive(true);
+    this.pacman.setVelocity(0);
+
+    this.resetGhosts();
+
+    this.isPacmanAlive = true;
+    this.hasRespawned = true;
+    this.isStarting = true;
+
+    this.createStartCountdown();
+  } else {
+    this.endGame("lose");
+  }
+}
+
+resetGhosts() {
+  const positions = [
+    { ghost: this.redGhost, x: 232 },
+    { ghost: this.pinkGhost, x: 220 },
+    { ghost: this.blueGhost, x: 255 },
+    { ghost: this.orangeGhost, x: 210 },
+  ];
+
+  positions.forEach(({ ghost, x }) => {
+    ghost.setPosition(x, 290);
     ghost.setTexture(ghost.originalTexture);
+    ghost.setActive(true);
+    ghost.setVisible(true);
     ghost.hasBeenEaten = true;
     ghost.enteredMaze = false;
-    clearInterval(ghost.blinkInterval);
-    let target = this.getScatterTarget(ghost);
-    this.updateGhostPath(ghost,target);
     ghost.direction = "left";
+    ghost.body.setVelocity(0);
+    clearInterval(ghost.blinkInterval);
+    const target = this.getScatterTarget(ghost);
+    this.updateGhostPath(ghost, target);
   });
+
   this.startGhostEntries();
   this.setModeTimer(this.scatterModeDuration);
   this.currentMode = "scatter";
-  this.previouseMode = this.currentMode;
- }
+  this.previousMode = this.currentMode;
+}
 
 respawnGhost(ghost) {
   ghost.setPosition(232,290);
@@ -702,6 +708,9 @@ respawnGhost(ghost) {
 }
 
   update() {
+
+    if (this.isStarting) return; // Block movement, AI, etc.
+
     if(!this.isPacmanAlive || this.lives === 0)
       return;
 
@@ -726,7 +735,106 @@ respawnGhost(ghost) {
       this.handleGhostMovement(this.redGhost);
     }
   }
-    
+
+  // Start game screen
+  createStartCountdown() {
+    const { width, height } = this.scale;
+    let count = 3;
+
+    // Create overlay
+    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.7);
+    overlay.setDepth(10);
+
+    // Create countdown text
+    const countdownText = this.add.text(width / 2, height / 2, count, {
+      fontSize: '100px',
+      color: '#ffffff',
+      fontFamily: 'Chewy'
+    }).setOrigin(0.5).setDepth(11);
+
+    // Set up a timed event to update the countdown
+    this.time.addEvent({
+      delay: 1000,
+      repeat: 3,
+      callback: () => {
+        count--;
+
+        if (count > 0) {
+          countdownText.setText(count);
+        } else if (count === 0) {
+          countdownText.setText('GO!');
+        } else {
+          // Fade everything out
+          this.tweens.add({
+            targets: [overlay, countdownText],
+            alpha: 0,
+            duration: 500,
+            onComplete: () => {
+              overlay.destroy();
+              countdownText.destroy();
+              this.isStarting = false; // Start game
+            }
+          });
+        }
+      }
+    });
+  }
+
+  endGame(outcome) {
+    const { width, height } = this.scale;
+  
+    // Dark overlay that fades in
+    const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000)
+      .setAlpha(0)
+      .setDepth(10);
+  
+    this.tweens.add({
+      targets: overlay,
+      alpha: 0.8,
+      duration: 800,
+      onComplete: () => {
+        const isWin = outcome === 'win';
+        const message = isWin ? 'You Win!' : 'Game Over';
+        const color = isWin ? '#00ff00' : '#ff0000';
+  
+        const resultText = this.add.text(width / 2, height / 2 - 60, message, {
+          fontSize: '64px',
+          color: color,
+          fontFamily: 'Chewy'
+        }).setOrigin(0.5).setDepth(11);
+  
+        const returnBtn = this.add.text(width / 2, height / 2 + (isWin ? 40 : 80), 'Return to Main Menu', {
+          fontSize: '28px',
+          backgroundColor: '#fff',
+          color: '#000',
+          padding: { x: 20, y: 10 },
+          fontFamily: 'Chewy'
+        }).setOrigin(0.5).setDepth(11).setInteractive();
+  
+        returnBtn.on('pointerdown', () => {
+          window.location.href = 'mainMenu.html';
+        });
+  
+        // Add "Try Again" button only on Game Over
+        if (!isWin) {
+          const tryAgainBtn = this.add.text(width / 2, height / 2 + 20, 'Try Again', {
+            fontSize: '28px',
+            backgroundColor: '#fff',
+            color: '#000',
+            padding: { x: 20, y: 10 },
+            fontFamily: 'Chewy'
+          }).setOrigin(0.5).setDepth(11).setInteractive();
+  
+          tryAgainBtn.on('pointerdown', () => {
+            this.scene.restart(); // Restarts the current game scene
+          });
+        }
+      }
+    });
+  
+    this.physics.pause();
+    this.isPacmanAlive = false;
+  }
 
   handleGhostDirection(ghost) {
     if(this.isInghostHouse(ghost.x,ghost.y)){
