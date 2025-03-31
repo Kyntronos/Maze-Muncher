@@ -89,7 +89,7 @@ class Pacman extends Phaser.Scene {
 
     // Pellets|Power Pellets
     this.load.image("dot","assets/pacman items/dot.png");
-    this.load.image("powerPill","assets/pacman items/spr_power_pill_0.png");
+    //this.load.image("powerPill","assets/pacman items/spr_power_pill_0.png"); UNCOMMENT THIS FOR POWERPILLS
 
 
     this.load.spritesheet("pinkGhost","assets/ghost/pink ghost/spr_ghost_pink_0.png",{
@@ -182,10 +182,10 @@ class Pacman extends Phaser.Scene {
     
     this.physics.add.collider(this.pacman,layer);
     this.dots = this.physics.add.group();
-    this.powerPills = this.physics.add.group();
+    //this.powerPills = this.physics.add.group(); UNCOMMENT THIS TO ADD BACK THE POWERPILLS
     this.populateBoardAndTrackEmptyTiles(layer);
     this.physics.add.overlap(this.pacman,this.dots,this.eatDot,null,this);
-    this.physics.add.overlap(this.pacman,this.powerPills,this.eatPowerPill,null,this);
+    //this.physics.add.overlap(this.pacman,this.powerPills,this.eatPowerPill,null,this); UNCOMMENT THIS TO ADD BACK THE POWERPILLS
     this.cursors = this.input.keyboard.createCursorKeys();
     this.detectIntersections();
     EnemyMovement.initializeGhosts.call(this, layer);
@@ -210,6 +210,25 @@ class Pacman extends Phaser.Scene {
       this.lifeCounter1 = this.add.image(32,32,"Farm boy0");
       this.lifeCounter2 = this.add.image(56,32,"Farm boy0");
 
+      //HERE IS OUR SCORE TRACKER
+    this.score = 0;
+    this.scoreText = this.add.text(this.cameras.main.width / 2, 8, 'Score: 0', {
+      fontSize: '18px', 
+      fill: '#fff' 
+    }).setOrigin(0.5, 0);  
+
+    //HERE IS OUR TIMER AND BY PROXY, SCORE MULTIPLIER. CURRENTLY NOT WORKING.
+    this.scoreMultiplier = 5.00;
+    this.timeElapsed = 0;
+    this.decreaseRate = 0.05;
+    this.multiplierText = this.add.text(300, 32, `Multiplier: x${this.scoreMultiplier}`,{
+      font: '16px Arial',
+      fill: '#ffffff'
+    });
+
+    //Power ups?
+    //this.powerUps = this.physics.add.group(); NOT IMPLEMENTING YET
+
     // Pause menu scene
     this.input.keyboard.on('keydown-P', () => {
       this.scene.launch('PauseMenu');  // Start the pause menu scene
@@ -218,7 +237,12 @@ class Pacman extends Phaser.Scene {
     }
 
 
+
   populateBoardAndTrackEmptyTiles(layer) {
+    //keep track of total dots
+    this.totalDots = 0;
+    this.collectedDots = 0;
+
     layer.forEachTile((tile)=>{
       if(!this.board[tile.y]) {
         this.board[tile.y] = [];
@@ -233,18 +257,28 @@ class Pacman extends Phaser.Scene {
         const x = tile.x*tile.width;
         const y = tile.y*tile.height;
         this.dots.create(x+tile.width,y+tile.height,"dot");
+
+        //increment total dots
+        this.totalDots++;
       }
     });
-
+    /* REMOVED POWERPILLS
     this.powerPills.create(32,144,"powerPill");
     this.powerPills.create(432,144,"powerPill");
     this.powerPills.create(32,480,"powerPill");
     this.powerPills.create(432,480,"powerPill");
+    */
   }
   eatDot(pacman,dot) {
     dot.disableBody(true,true);
-  }
+    this.collectedDots++;
+    this.score += 100;
+    this.scoreText.setText('Score: ' + this.score);
 
+    console.log(`Collected Dots: ${this.collectedDots} / ${this.totalDots}`);
+
+  }
+  /*  REMOVED POWERPILLS
   eatPowerPill(pacman,powerPill) {
     powerPill.disableBody(true,true);
     this.currentMode = "scared";
@@ -255,6 +289,7 @@ class Pacman extends Phaser.Scene {
       ghost.hasBeenEaten = false;
     });
   }
+    */
 
 
   detectIntersections() {
@@ -370,7 +405,23 @@ respawnGhost(ghost) {
   GhostBehavior.updateGhostPath.call(this, ghost,target);
 }
 
-  update() {
+//update score multiplier
+updateMultiplier(delta){
+  this.timeElapsed += delta;
+
+  if(this.timeElapsed >= 1000){
+    this.timeElapsed = 0;
+
+    if(this.scoreMultiplier > 1){
+      this.scoreMultiplier -= this.decreaseRate;
+      this.scoreMultiplier = Math.max(this.scoreMultiplier, 1.00);
+    }
+
+    this.multiplierText.setText(`Multiplier: x${this.scoreMultiplier.toFixed(2)}`);
+  }
+}
+
+  update(time, delta) {
     if(!this.isPacmanAlive || this.lives === 0)
       return;
 
@@ -394,6 +445,10 @@ respawnGhost(ghost) {
       EnemyMovement.handleGhostDirection.call(this, this.redGhost);
       EnemyMovement.handleGhostMovement.call(this, this.redGhost);
     }
+
+    //updating multiplier
+    this.updateMultiplier(delta);
+
   }
     
 
