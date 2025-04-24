@@ -136,11 +136,11 @@ function goBack() {
     } else {
         window.location.href = "MainMenu.html";
 
-    hideAllScreens();
-    document.getElementById(previousScreen).style.display = "block";
-    if (previousScreen === "customizationScreen" || previousScreen === "leaderboardScreen") {
-        previousScreen = "mainMenu";
-
+        hideAllScreens();
+        document.getElementById(previousScreen).style.display = "block";
+        if (previousScreen === "customizationScreen" || previousScreen === "leaderboardScreen") {
+            previousScreen = "mainMenu";
+        }
     }
 }
 
@@ -189,7 +189,7 @@ function updateLeaderboardDisplay() {
 function updateLeaderboard(playerName, score) {
     leaderboardData.push({ name: playerName, score: score });
     leaderboardData.sort((a, b) => b.score - a.score); //high to low
-     if (leaderboardData.length > 10) {
+    if (leaderboardData.length > 10) {
         leaderboardData = leaderboardData.slice(0, 10); // Keep only top 10
     }
     localStorage.setItem('mazeMuncherLeaderboard', JSON.stringify(leaderboardData)); // Save to localStorage
