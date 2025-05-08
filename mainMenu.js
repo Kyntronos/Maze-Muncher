@@ -99,14 +99,8 @@ function setColorBlindMode(type) {
 }
 
 function goBack() {
-    if (previousScreen.endsWith('.html')) {
-        // Navigate to another HTML file
-        window.location.href = previousScreen;
-    } else {
-        // Show the previous screen in the current document
-        hideAllScreens();
-        document.getElementById(previousScreen).style.display = "block";
-    }
+        document.querySelectorAll('.menu').forEach(menu => menu.style.display = 'none');
+        document.getElementById('mainMenu').style.display = 'block';
 }
 
 function viewLeaderboard() {

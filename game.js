@@ -104,6 +104,8 @@ class Pacman extends Phaser.Scene {
 
   }
   create() {
+    //Stores scene in the window object for testing purposes.
+    window.myScene = this;
 
     GameScreens.createStartCountdown.call(this, () => {
       this.sound.play('dotSfx', { volume: 0 });

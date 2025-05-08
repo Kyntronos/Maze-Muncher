@@ -5,7 +5,16 @@
 // test/gameScreens.test.js
 import { createStartCountdown, endGame, pauseMenu } from "../src/controllers/gameScreens.js";
 
+function createMockRectangle() {
+    return {
+        setDepth: jest.fn().mockReturnThis(),
+        destroy: jest.fn().mockReturnThis(),
+        setAlpha: jest.fn().mockReturnThis(),
+        setStrokeStyle: jest.fn().mockReturnThis()
+    };
+}
 
+global.sfxVol = 1; 
 
 describe("GameScreens module", () => {
     let mockScene;
@@ -13,6 +22,9 @@ describe("GameScreens module", () => {
     beforeEach(() => {
         // Use fake timers so we can fast-forward delays.
         jest.useFakeTimers();
+
+        // Mock localStorage for the leaderboard.
+        localStorage.setItem('mazeMuncherLeaderboard', JSON.stringify([{ score: 9999 }]));
 
         // Create a minimal mock scene object with the properties and methods used in gameScreens.
         mockScene = {
@@ -23,7 +35,8 @@ describe("GameScreens module", () => {
                     return {
                         x, y, width, height, fillColor, alpha,
                         setDepth: jest.fn().mockReturnThis(),
-                        destroy: jest.fn()
+                        destroy: jest.fn(),
+                        setStrokeStyle: jest.fn().mockReturnThis() 
                     };
                 }),
                 text: jest.fn().mockImplementation((x, y, text, style) => {
@@ -61,7 +74,8 @@ describe("GameScreens module", () => {
             // Mock input.keyboard.on for setting up pause key listeners.
             input: {
                 keyboard: {
-                    on: jest.fn()
+                    on: jest.fn(),
+                    addKeys: jest.fn().mockReturnValue({})
                 }
             },
             // Mock the scene object for launching/pause/restart.
@@ -69,7 +83,16 @@ describe("GameScreens module", () => {
                 launch: jest.fn(),
                 pause: jest.fn(),
                 restart: jest.fn()
-            }
+            },
+            gameMusic: {
+                isPlaying: true,
+                stop: jest.fn()
+            },
+            sound: {
+                play: jest.fn()
+            },
+            score: 100,
+            scoreMultiplier: 1
         };
     });
 
@@ -118,7 +141,7 @@ describe("GameScreens module", () => {
             });
 
             // Create mocks for add.rectangle and add.text to capture their calls.
-            const overlayMock = { setAlpha: jest.fn().mockReturnThis(), setDepth: jest.fn().mockReturnThis() };
+            const overlayMock = createMockRectangle();
             const resultTextMock = { setOrigin: jest.fn().mockReturnThis(), setDepth: jest.fn().mockReturnThis() };
             const returnBtnMock = { setOrigin: jest.fn().mockReturnThis(), setDepth: jest.fn().mockReturnThis(), setInteractive: jest.fn().mockReturnThis(), on: jest.fn() };
 
@@ -150,7 +173,7 @@ describe("GameScreens module", () => {
                 return options;
             });
 
-            const overlayMock = { setAlpha: jest.fn().mockReturnThis(), setDepth: jest.fn().mockReturnThis() };
+            const overlayMock = createMockRectangle();
             // We need two calls to add.text in this case (one for resultText and one for the Try Again button)
             const resultTextMock = { setOrigin: jest.fn().mockReturnThis(), setDepth: jest.fn().mockReturnThis() };
             const tryAgainBtnMock = { setOrigin: jest.fn().mockReturnThis(), setDepth: jest.fn().mockReturnThis(), setInteractive: jest.fn().mockReturnThis(), on: jest.fn() };

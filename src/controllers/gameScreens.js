@@ -145,7 +145,6 @@ export function endGame(outcome) {
                 }).setOrigin(0.5).setDepth(11);
 
 
-
                 const returnBtn = this.add.text(width / 2, height / 2 + (isWin ? 40 : 80), 'Return to Main Menu', {
                     fontSize: '28px',
                     backgroundColor: '#fff',
