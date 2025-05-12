@@ -1,3 +1,7 @@
+//written by: Dawsyn B
+//tested by: Dawsyn B
+//debugged by: Dawsyn B
+
 
 //Loads all base farmboy sprites 
 export function loadBaseSprites(scene) {

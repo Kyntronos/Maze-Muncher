@@ -1,6 +1,8 @@
+//written by: Dawsyn B, Kyle C
+//tested by: Dawsyn B, Kyle C
+//debugged by: Dawsyn B, Kyle C
+
 import * as GhostBehavior from "./ghostBehaviors.js";
-
-
 
 /**
  * Initializes all enemy objects for the scene.

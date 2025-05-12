@@ -1,3 +1,7 @@
+//written by: Dawsyn B, Kacy D, Hope W, Kyle C
+//tested by: Dawsyn B, Kacy D, Hope W, Kyle C
+//debugged by: Dawsyn B, Kacy D, Hope W, Kyle C
+
 import * as EnemyMovement from "./enemyMovement.js";
 
 // Initializes the mode timer by starting it with the scatter duration.

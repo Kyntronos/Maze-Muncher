@@ -1,5 +1,8 @@
-import { loadMap } from './mazeUtils.js';
+//written by: Kacy D, Hope W
+//tested by: Dawsyn B, Kacy D, Hope W, Kyle C
+//debugged by: Dawsyn B, Kacy D, Hope W, Kyle C
 
+import { loadMap } from './mazeUtils.js';
 
 /**
  * Creates a countdown overlay before the game starts (or restarts).

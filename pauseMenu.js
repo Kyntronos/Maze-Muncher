@@ -1,3 +1,7 @@
+//written by: Kacy D, Hope W
+//tested by: Kacy D, Hope W
+//debugged by: Kacy D, Hope W
+
 class PauseMenu extends Phaser.Scene {
     constructor() {
         super({ key: 'PauseMenu' });

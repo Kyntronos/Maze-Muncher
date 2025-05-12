@@ -1,3 +1,7 @@
+//written by: Dawsyn B
+//tested by: Dawsyn B
+//debugged by: Dawsyn B
+
 import * as GhostBehavior from "./ghostBehaviors.js";
 import { endGame } from "./gameScreens.js";
 

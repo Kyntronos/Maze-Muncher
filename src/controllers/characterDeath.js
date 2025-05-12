@@ -1,3 +1,7 @@
+//written by: Dawsyn B, Kacy D
+//tested by: Dawsyn B, Kacy D
+//debugged by: Dawsyn B, Kacy D
+
 import { resetGhosts } from "./enemyDeath.js";
 import { createStartCountdown, endGame } from "./gameScreens.js"; 
 const selectedHat = localStorage.getItem('selectedHat') || 'none';

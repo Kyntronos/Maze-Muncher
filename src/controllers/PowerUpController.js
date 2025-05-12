@@ -1,3 +1,7 @@
+//written by: Kyle C
+//tested by: Kyle C
+//debugged by: Kyle C
+
 export class powerUp {
     consturctor(name, icon) {
         this.name = name;

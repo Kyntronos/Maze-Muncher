@@ -1,3 +1,7 @@
+//written by: Dawsyn B
+//tested by: Dawsyn B
+//debugged by: Dawsyn B
+
 import * as EnemyMovement from "./enemyMovement.js";
 import * as GhostBehavior from "./ghostBehaviors.js";
 import * as characterDeath from "./characterDeath.js";

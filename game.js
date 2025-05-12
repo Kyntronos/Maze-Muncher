@@ -1,3 +1,7 @@
+//written by: Dawsyn B, Kacy D, Hope W, Kyle C
+//tested by: Dawsyn B, Kacy D, Hope W, Kyle C
+//debugged by: Dawsyn B, Kacy D, Hope W, Kyle C
+
 // Import modules for handling character movement, enemy behavior/movement, maze utilities, enemy death, pellet consumption, power ups, and game screens.
 import * as CharacterMovement from "./src/controllers/characterMovement.js";
 import * as EnemyBehavior from "./src/controllers/ghostBehaviors.js";

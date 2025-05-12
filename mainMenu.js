@@ -1,3 +1,7 @@
+//written by: Dawsyn B, Kacy D, Hope W, Kyle C
+//tested by: Dawsyn B, Kacy D, Hope W, Kyle C
+//debugged by: Dawsyn B, Kacy D, Hope W, Kyle C
+
 // Volume Preferences
 const MENU_VOL_KEY = 'mazeMuncher_menuVol';
 const GAME_VOL_KEY = 'mazeMuncher_gameVol';

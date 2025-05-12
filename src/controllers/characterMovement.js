@@ -1,3 +1,7 @@
+//written by: Dawsyn B, Kacy D, Hope W, Kyle C
+//tested by: Dawsyn B, Kacy D, Hope W, Kyle C
+//debugged by: Dawsyn B, Kacy D, Hope W, Kyle C
+
 // Handles the player's (character's) directional input from the arrow keys.
 // It updates the current and previous direction, and determines the next intersection.
 export function handleDirectionInput() {

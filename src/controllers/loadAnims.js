@@ -1,3 +1,7 @@
+//written by: Dawsyn B
+//tested by: Dawsyn B
+//debugged by: Dawsyn B
+
 //Load Base animations
 export function loadBaseAnims(scene) {
     scene.anims.create({

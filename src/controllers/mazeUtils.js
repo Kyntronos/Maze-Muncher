@@ -1,3 +1,7 @@
+//written by: Dawsyn B, Kacy D, Hope W, Kyle C
+//tested by: Dawsyn B, Kacy D, Hope W, Kyle C
+//debugged by: Dawsyn B, Kacy D, Hope W, Kyle C
+
 /**
  * Populates the board with pellets (dots) and power pills.
  * It iterates over each tile in the provided layer, tracks the tile values in a board array,
