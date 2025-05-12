@@ -3,7 +3,7 @@
 //debugged by: Kyle C
 
 export class powerUp {
-    consturctor(name, icon) {
+    constructor(name, icon) {
         this.name = name;
         this.icon = icon;
     }
@@ -24,6 +24,7 @@ export class PotatoPowerUp extends powerUp {
     }
 
     activate(player){
+        console.log(`${this.name} activated!`);
         const scene = player.scene;
         scene.scoreMultiplier += 0.25;
 
@@ -33,17 +34,29 @@ export class PotatoPowerUp extends powerUp {
 }
 
 export class CornPowerUp extends powerUp {
-    constructor(){
+    constructor() {
         super('Stonks', 'Corn.png');
     }
 
-    activate(player){
+    activate(player) {
+        console.log("CornPowerUp activate() method called.");
         const scene = player.scene;
-        scene.score += 2000;
+        console.log("Player object in activate():", player);
+        console.log("Scene object in activate():", scene);
 
-        if(scene.scoreText?.setText){
-            scene.scoreText.setText(`Score: ${scene.score}`);
+        try {
+            scene.score += 2000;
+
+            if (scene.scoreText?.setText) {
+                console.log("Setting new score text.");
+                scene.scoreText.setText(`Score: ${scene.score}`);
+            } else {
+                console.warn("scoreText object is undefined or invalid.");
+            }
+            
+            console.log("CornPowerUp activated. Score increased by 2000.");
+        } catch (error) {
+            console.error("Error in CornPowerUp activate():", error);
         }
-        //scene.showMessage?.("There's how many on this thing? (+ 2000 points!)");
     }
 }

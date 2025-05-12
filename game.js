@@ -146,12 +146,25 @@ class Pacman extends Phaser.Scene {
     //Create the inventory system...
     this.pacman.powerUp = null;
 
-    this.pacman.usePowerUp = function() {
-      if(this.powerUp){
-        this.powerUp.activate(this);
-        this.powerUp = null
-      }
-    };
+  this.pacman.usePowerUp = function() {
+  console.log("Inside usePowerUp(). This context:", this);
+  console.log("Current powerUp:", this.powerUp);
+
+  if (this.powerUp) {
+    console.log(`Activating power-up: ${this.powerUp.name}`);
+    this.powerUp.activate(this);
+    this.powerUp = null;
+  } else {
+    console.log("No power-up to activate.");
+  }
+};
+
+
+// Confirm that the method has been assigned correctly
+console.log("Assigned usePowerUp method to pacman:", this.pacman.usePowerUp);
+
+
+
 
 
     const selectedHat = localStorage.getItem('selectedHat') || 'none';
@@ -381,18 +394,36 @@ class Pacman extends Phaser.Scene {
     });
 
     this.physics.add.overlap(this.pacman, this.powerUpsGroup, (pacman, powerUpSprite) => {
-      if(!this.pacman.powerUp){
-        this.pacman.powerUp = powerUpSprite.powerUp;
+  console.log("Collision detected with power-up:", powerUpSprite.texture.key);
 
-        if(powerUpSprite.outline){
-          powerUpSprite.outline.destroy();
-        }
+  // Check if Pacman is not already holding a power-up
+  if (!this.pacman.powerUp) {
+    console.log("Assigning power-up:", powerUpSprite.powerUp);
 
-        powerUpSprite.destroy();
+    // Assign the power-up to Pacman
+    this.pacman.powerUp = powerUpSprite.powerUp;
+    console.log(`Power-up collected: ${powerUpSprite.powerUp?.name}`);
 
-        //this.showMessage?.('Picked up a potato! Press [E] to use!');
-      }
-    });
+    // Activate the power-up immediately
+    if (this.pacman.powerUp) {
+      console.log(`Activating power-up: ${this.pacman.powerUp.name}`);
+      this.pacman.powerUp.activate(this.pacman); // Activate the power-up
+    }
+
+    // Clean up the power-up sprite (destroy the visual representation)
+    if (powerUpSprite.outline) {
+      powerUpSprite.outline.destroy();
+    }
+    powerUpSprite.destroy(); // Destroy the power-up sprite from the world
+
+    // Clear the power-up after activation
+    this.pacman.powerUp = null; // Allow future power-ups to be collected
+  } else {
+    console.log("Already holding a power-up:", this.pacman.powerUp);
+  }
+});
+
+
 
   }
 
@@ -409,6 +440,9 @@ class Pacman extends Phaser.Scene {
     CharacterMovement.handleDirectionInput.call(this);
     //If powerup is used...
     if(this.useKey && Phaser.Input.Keyboard.JustDown(this.useKey)){
+      console.log("E key is pressed. Attempting to use power-up:", this.pacman.powerUp);
+      console.log("Pacman object before attempting usePowerUp:", this.pacman);
+      console.log("Pacman usePowerUp function:", this.pacman.usePowerUp);
       this.pacman.usePowerUp?.();
     }
 
